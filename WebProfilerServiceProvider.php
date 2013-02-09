@@ -15,11 +15,8 @@ use Symfony\Bundle\WebProfilerBundle\Controller\ExceptionController;
 use Symfony\Bundle\WebProfilerBundle\Controller\RouterController;
 use Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController;
 use Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\HttpKernel\EventListener\ProfilerListener;
-use Symfony\Component\HttpKernel\EventListener\RouterListener;
-use Symfony\Component\HttpKernel\EventListener\LocaleListener;
 use Symfony\Component\HttpKernel\Profiler\FileProfilerStorage;
 use Symfony\Component\HttpKernel\DataCollector\ConfigDataCollector;
 use Symfony\Component\HttpKernel\DataCollector\ExceptionDataCollector;
@@ -51,7 +48,6 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             $dispatcher->setProfiler($app['profiler']);
 
             $dispatcher->addSubscriber($app['profiler.listener']);
-            $dispatcher->addSubscriber($app['web_profiler.toolbar.listener']);
             $dispatcher->addSubscriber($app['profiler']->get('request'));
 
             return $dispatcher;
@@ -190,5 +186,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
     {
         // make sure dispatcher and profiler are initialized early
         $dispatcher = $app['dispatcher'];
+
+        $dispatcher->addSubscriber($app['web_profiler.toolbar.listener']);
     }
 }
