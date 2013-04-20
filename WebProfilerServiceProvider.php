@@ -44,7 +44,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
     public function register(Application $app)
     {
         $app['profiler.options'] = array(
-            'cache' => NULL,
+            'cache' => null,
             'mount_prefix' => '/_profiler'
         );
         $app['dispatcher'] = $app->share($app->extend('dispatcher', function ($dispatcher, $app) {
