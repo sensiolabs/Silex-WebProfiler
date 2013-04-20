@@ -43,6 +43,10 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 {
     public function register(Application $app)
     {
+        $app['profiler.options'] = array(
+            'cache' => NULL,
+            'mount_prefix' => '/_profiler'
+        );
         $app['dispatcher'] = $app->share($app->extend('dispatcher', function ($dispatcher, $app) {
             $dispatcher = new TraceableEventDispatcher($dispatcher, $app['stopwatch'], $app['logger']);
             $dispatcher->setProfiler($app['profiler']);
@@ -101,7 +105,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         });
 
         $app['profiler.storage'] = $app->share(function ($app) {
-            return new FileProfilerStorage('file:'.$app['profiler.cache_dir']);
+            return new FileProfilerStorage('file:'.$app['profiler.options']['cache']);
         });
 
         $app['profiler.request_matcher'] = null;
@@ -176,5 +180,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $dispatcher->addSubscriber($app['profiler.listener']);
         $dispatcher->addSubscriber($app['web_profiler.toolbar.listener']);
         $dispatcher->addSubscriber($app['profiler']->get('request'));
+
+        $app->mount($app['profiler.options']['mount_prefix'], $this->connect($app));
     }
 }

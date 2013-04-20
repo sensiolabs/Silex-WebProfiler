@@ -10,12 +10,16 @@ To enable it, add this dependency to your `composer.json` file:
 
 And enable it in your application:
 
+```php
     use Silex\Provider;
 
-    $app->register($p = new Provider\WebProfilerServiceProvider(), array(
-        'profiler.cache_dir' => __DIR__.'/../cache/profiler',
+    $app->register(new Provider\WebProfilerServiceProvider(), array(
+        'profiler.options' => array(
+            'cache' => __DIR__.'/../cache/profiler',
+            'mount_prefix' => '/_prof' // not necessary, default: /_profiler
+        )
     ));
-    $app->mount('/_profiler', $p);
+```
 
 The provider depends on `ServiceControllerServiceProvider`,
 `TwigServiceProvider` and `UrlGeneratorServiceProvider`, so you also need to
