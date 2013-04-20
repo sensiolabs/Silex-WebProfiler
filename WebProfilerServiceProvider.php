@@ -43,10 +43,6 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 {
     public function register(Application $app)
     {
-        $app['profiler.options'] = array(
-            'cache' => null,
-            'mount_prefix' => '/_profiler'
-        );
         $app['dispatcher'] = $app->share($app->extend('dispatcher', function ($dispatcher, $app) {
             $dispatcher = new TraceableEventDispatcher($dispatcher, $app['stopwatch'], $app['logger']);
             $dispatcher->setProfiler($app['profiler']);
@@ -180,7 +176,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $dispatcher->addSubscriber($app['profiler.listener']);
         $dispatcher->addSubscriber($app['web_profiler.toolbar.listener']);
         $dispatcher->addSubscriber($app['profiler']->get('request'));
-
-        $app->mount($app['profiler.options']['mount_prefix'], $this->connect($app));
+        $prefix = isset($app['profiler.options']['mount_prefix']) ? $app['profiler.options']['mount_prefix'] : '/_profiler';
+        $app->mount($prefix, $this->connect($app));
     }
 }
