@@ -14,7 +14,7 @@ And enable it in your application:
 
     $app->register(new Provider\WebProfilerServiceProvider(), array(
         'profiler.cache_dir' => __DIR__.'/../cache/profiler',
-        'profiler.mount_prefix' => '/_prof' // not necessary, default: /_profiler
+        'profiler.mount_prefix' => '/_profiler', // this is the default
     ));
 
 The provider depends on `ServiceControllerServiceProvider`,
