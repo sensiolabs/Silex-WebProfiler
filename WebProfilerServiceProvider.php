@@ -101,7 +101,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         });
 
         $app['profiler.storage'] = $app->share(function ($app) {
-            return new FileProfilerStorage('file:'.$app['profiler.options']['cache']);
+            return new FileProfilerStorage('file:'.$app['profiler.cache_dir']);
         });
 
         $app['profiler.request_matcher'] = null;
@@ -176,7 +176,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $dispatcher->addSubscriber($app['profiler.listener']);
         $dispatcher->addSubscriber($app['web_profiler.toolbar.listener']);
         $dispatcher->addSubscriber($app['profiler']->get('request'));
-        $prefix = isset($app['profiler.options']['mount_prefix']) ? $app['profiler.options']['mount_prefix'] : '/_profiler';
+        $prefix = isset($app['profiler.mount_prefix']) ? $app['profiler.mount_prefix'] : '/_profiler';
         $app->mount($prefix, $this->connect($app));
     }
 }

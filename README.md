@@ -14,10 +14,8 @@ And enable it in your application:
 use Silex\Provider;
 
 $app->register(new Provider\WebProfilerServiceProvider(), array(
-    'profiler.options' => array(
-        'cache' => __DIR__.'/../cache/profiler',
-        'mount_prefix' => '/_prof' // not necessary, default: /_profiler
-    )
+    'profiler.cache_dir' => __DIR__.'/../cache/profiler',
+    'profiler.mount_prefix' => '/_prof' // not necessary, default: /_profiler
 ));
 ```
 
