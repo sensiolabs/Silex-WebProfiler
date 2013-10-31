@@ -1,0 +1,20 @@
+language: php
+
+env:
+    - SYMFONY_DEPS_VERSION=2.2
+    - SYMFONY_DEPS_VERSION=2.3
+    - SYMFONY_DEPS_VERSION=2.4
+
+before_script:
+    # symfony/*
+    - 'sh -c "if [ ''$SYMFONY_DEPS_VERSION'' = ''2.4'' ]; then sed -i ''s/~2.2/2.4.*@dev/g'' composer.json; sed -i ''s/\"require-dev\": {/\"require-dev\": { \"symfony\/debug\": \"2.4.*@dev\",/g'' composer.json; composer update --dev --prefer-source; fi"'
+    - 'sh -c "if [ ''$SYMFONY_DEPS_VERSION'' = ''2.3'' ]; then sed -i ''s/~2.2/2.3.*@dev/g'' composer.json; sed -i ''s/\"require-dev\": {/\"require-dev\": { \"symfony\/debug\": \"2.3.*@dev\",/g'' composer.json; composer update --dev --prefer-source; fi"'
+    - 'sh -c "if [ ''$SYMFONY_DEPS_VERSION'' = ''2.2'' ]; then sed -i ''s/~2.2/2.2.*@dev/g'' composer.json; composer update --dev --prefer-source; fi"'
+    - 'composer install --dev --prefer-source'
+
+script: vendor/bin/phpunit
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
