@@ -1,0 +1,8 @@
+---------------------------------------------------------------------------
+
+by Danez at 2013-12-06T11:32:51Z
+
+I addressed the comments from @stof.
+Removed one unused $app
+Moved the extensions of the form-services outside of the data_collectors service. This also means that the FormServiceProvider needs to be registered before this one, but it should be okay as the same applies to twig, routing, etc.
+Added a note about this in the README
