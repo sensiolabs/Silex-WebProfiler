@@ -11,11 +11,13 @@
 
 namespace Silex\Provider;
 
+use Pimple\Container;
 use Symfony\Bundle\WebProfilerBundle\Controller\ExceptionController;
 use Symfony\Bundle\WebProfilerBundle\Controller\RouterController;
 use Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController;
 use Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener;
 use Symfony\Bundle\WebProfilerBundle\Twig\WebProfilerExtension;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\DataCollector\FormDataCollector;
 use Symfony\Component\Form\Extension\DataCollector\FormDataExtractor;
 use Symfony\Component\Form\Extension\DataCollector\Proxy\ResolvedTypeFactoryDataCollectorProxy;
@@ -35,8 +37,10 @@ use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Bridge\Twig\Extension\CodeExtension;
 use Silex\Application;
-use Silex\ServiceProviderInterface;
-use Silex\ControllerProviderInterface;
+use Pimple\ServiceProviderInterface;
+use Silex\Api\ControllerProviderInterface;
+use Silex\Api\BootableProviderInterface;
+use Silex\Api\EventListenerProviderInterface;
 use Silex\ServiceControllerResolver;
 
 /**
@@ -44,9 +48,9 @@ use Silex\ServiceControllerResolver;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class WebProfilerServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
+class WebProfilerServiceProvider implements ServiceProviderInterface, ControllerProviderInterface, BootableProviderInterface, EventListenerProviderInterface
 {
-    public function register(Application $app)
+    public function register(Container $app)
     {
         $app['profiler.mount_prefix'] = '/_profiler';
         $app['dispatcher'] = $app->share($app->extend('dispatcher', function ($dispatcher, $app) {
@@ -204,8 +208,11 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
     public function boot(Application $app)
     {
-        $dispatcher = $app['dispatcher'];
+        $app->mount($app['profiler.mount_prefix'], $this->connect($app));
+    }
 
+    public function subscribe(Container $app, EventDispatcherInterface $dispatcher)
+    {
         $dispatcher->addSubscriber($app['profiler.listener']);
 
         if ($app['web_profiler.debug_toolbar.enable']) {
@@ -213,6 +220,5 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         }
 
         $dispatcher->addSubscriber($app['profiler']->get('request'));
-        $app->mount($app['profiler.mount_prefix'], $this->connect($app));
     }
 }
