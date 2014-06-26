@@ -76,7 +76,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
                 'config'    => function ($app) { return new ConfigDataCollector(); },
                 'request'   => function ($app) { return new RequestDataCollector(); },
                 'exception' => function ($app) { return new ExceptionDataCollector(); },
-                'events'    => function ($app) { return new EventDataCollector(); },
+                'events'    => function ($app) { return new EventDataCollector($app['dispatcher']); },
                 'logger'    => function ($app) { return new LoggerDataCollector($app['logger']); },
                 'time'      => function ($app) { return new TimeDataCollector(null, $app['stopwatch']); },
                 'router'    => function ($app) { return new RouterDataCollector(); },
