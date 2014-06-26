@@ -55,7 +55,6 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $app['profiler.mount_prefix'] = '/_profiler';
         $app->extend('dispatcher', function ($dispatcher, $app) {
             $dispatcher = new TraceableEventDispatcher($dispatcher, $app['stopwatch'], $app['logger']);
-            $dispatcher->setProfiler($app['profiler']);
 
             return $dispatcher;
         });
