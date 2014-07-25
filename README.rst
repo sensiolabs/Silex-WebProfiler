@@ -20,7 +20,7 @@ And enable it in your application:
 
     use Silex\Provider;
 
-    $app->register(new Provider\WebProfilerServiceProvider(), array(
+    $app->register(new Silex\Provider\WebProfilerServiceProvider(), array(
         'profiler.cache_dir' => __DIR__.'/../cache/profiler',
         'profiler.mount_prefix' => '/_profiler', // this is the default
     ));
@@ -31,9 +31,9 @@ to enable those if that's not already the case:
 
 .. code-block:: php
 
-    $app->register(new Provider\ServiceControllerServiceProvider());
-    $app->register(new Provider\TwigServiceProvider());
-    $app->register(new Provider\UrlGeneratorServiceProvider());
+    $app->register(new Silex\Provider\ServiceControllerServiceProvider());
+    $app->register(new Silex\Provider\TwigServiceProvider());
+    $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 If you are using ``FormServiceProvider``, the ``WebProfilerServiceProvider`` will detect that and
 enable the corresponding panels.
