@@ -10,7 +10,7 @@ To enable it, add this dependency to your ``composer.json`` file:
 
     {
         "require": {
-            "silex/web-profiler": "~1.0"
+            "silex/web-profiler": "~2.0@dev"
         }
     }
 
@@ -26,14 +26,14 @@ And enable it in your application:
     ));
 
 The provider depends on ``ServiceControllerServiceProvider``,
-``TwigServiceProvider`` and ``UrlGeneratorServiceProvider``, so you also need
+``TwigServiceProvider`` and ``RoutingServiceProvider``, so you also need
 to enable those if that's not already the case:
 
 .. code-block:: php
 
     $app->register(new Provider\ServiceControllerServiceProvider());
     $app->register(new Provider\TwigServiceProvider());
-    $app->register(new Provider\UrlGeneratorServiceProvider());
+    $app->register(new Provider\RoutingServiceProvider());
 
 If you are using ``FormServiceProvider``, the ``WebProfilerServiceProvider`` will detect that and
 enable the corresponding panels.
