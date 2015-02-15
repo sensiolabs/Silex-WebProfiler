@@ -12,6 +12,8 @@
 namespace Silex\Provider;
 
 use Pimple\Container;
+use Symfony\Bridge\Twig\DataCollector\TwigDataCollector;
+use Symfony\Bridge\Twig\Extension\ProfilerExtension;
 use Symfony\Bundle\WebProfilerBundle\Controller\ExceptionController;
 use Symfony\Bundle\WebProfilerBundle\Controller\RouterController;
 use Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController;
@@ -67,6 +69,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             array('router',    '@WebProfiler/Collector/router.html.twig'),
             array('memory',    '@WebProfiler/Collector/memory.html.twig'),
             array('form',      '@WebProfiler/Collector/form.html.twig'),
+            array('twig',      '@WebProfiler/Collector/twig.html.twig'),
         );
 
         $app['data_collectors'] = function ($app) {
@@ -100,6 +103,20 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
                 return $extensions;
             });
+        }
+
+        if (class_exists('Symfony\Bridge\Twig\Extension\ProfilerExtension')) {
+            $app->extend('data_collectors', function ($collectors, $app) {
+                $collectors['twig'] = function ($app) {
+                    return new TwigDataCollector($app['twig.profiler.profile']);
+                };
+
+                return $collectors;
+            });
+
+            $app['twig.profiler.profile'] = function () {
+                return new \Twig_Profiler_Profile();
+            };
         }
 
         $app['web_profiler.controller.profiler'] = function ($app) {
@@ -161,6 +178,10 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
             if (class_exists('\Symfony\Bundle\WebProfilerBundle\Twig\WebProfilerExtension')) {
                 $twig->addExtension(new WebProfilerExtension());
+            }
+
+            if (class_exists('Symfony\Bridge\Twig\Extension\ProfilerExtension')) {
+                $twig->addExtension(new ProfilerExtension($app['twig.profiler.profile'], $app['stopwatch']));
             }
 
             return $twig;
