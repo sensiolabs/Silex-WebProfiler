@@ -57,17 +57,19 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             return new TraceableEventDispatcher($dispatcher, $app['stopwatch'], $app['logger']);
         });
 
-        $app['data_collector.templates'] = array(
-            array('config',    '@WebProfiler/Collector/config.html.twig'),
-            array('request',   '@WebProfiler/Collector/request.html.twig'),
-            array('exception', '@WebProfiler/Collector/exception.html.twig'),
-            array('events',    '@WebProfiler/Collector/events.html.twig'),
-            array('logger',    '@WebProfiler/Collector/logger.html.twig'),
-            array('time',      '@WebProfiler/Collector/time.html.twig'),
-            array('router',    '@WebProfiler/Collector/router.html.twig'),
-            array('memory',    '@WebProfiler/Collector/memory.html.twig'),
-            array('form',      '@WebProfiler/Collector/form.html.twig'),
-        );
+        $app['data_collector.templates'] = function ($app) {
+            return array(
+                array('config',    '@WebProfiler/Collector/config.html.twig'),
+                array('request',   '@WebProfiler/Collector/request.html.twig'),
+                array('exception', '@WebProfiler/Collector/exception.html.twig'),
+                array('events',    '@WebProfiler/Collector/events.html.twig'),
+                array('logger',    '@WebProfiler/Collector/logger.html.twig'),
+                array('time',      '@WebProfiler/Collector/time.html.twig'),
+                array('router',    '@WebProfiler/Collector/router.html.twig'),
+                array('memory',    '@WebProfiler/Collector/memory.html.twig'),
+                array('form',      '@WebProfiler/Collector/form.html.twig'),
+            );
+        };
 
         $app['data_collectors'] = function ($app) {
             return array(
