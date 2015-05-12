@@ -109,17 +109,17 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         }
 
         if (class_exists('Symfony\Bridge\Twig\Extension\ProfilerExtension')) {
-            $app['data_collectors'] = $app->share($app->extend('data_collectors', function ($collectors, $app) {
-                $collectors['twig'] = $app->share(function ($app) {
+            $app['data_collectors'] = $app->extend('data_collectors', function ($collectors, $app) {
+                $collectors['twig'] = function ($app) {
                     return new TwigDataCollector($app['twig.profiler.profile']);
-                });
+                };
 
                 return $collectors;
-            }));
-
-            $app['twig.profiler.profile'] = $app->share(function () {
-                return new \Twig_Profiler_Profile();
             });
+
+            $app['twig.profiler.profile'] = function () {
+                return new \Twig_Profiler_Profile();
+            };
         }
 
         $app['web_profiler.controller.profiler'] = function ($app) {
