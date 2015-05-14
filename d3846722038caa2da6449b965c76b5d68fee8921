@@ -1,0 +1,50 @@
+---------------------------------------------------------------------------
+
+by GromNaN at 2015-05-12T09:14:15Z
+
+Failing test: https://travis-ci.org/GromNaN/Silex-WebProfiler/jobs/62204523
+
+---------------------------------------------------------------------------
+
+by flip111 at 2015-05-12T18:25:06Z
+
+Possibly causing issues together with Silex-Debug https://github.com/jeromemacias/Silex-Debug/issues/5
+
+---------------------------------------------------------------------------
+
+by GromNaN at 2015-05-12T20:38:48Z
+
+@flip111 The return value of `$app['data_collector.templates']` is still an array, so the `array_merge` should work.
+
+But it's becoming more like a service and adding the `dump` template will be as simple as extending the service definition.
+
+```php
+$app['data_collector.templates'] = $app->extends('data_collector.templates', function ($templates) {
+    $templates['dump'] = '@Debug/Profiler/dump.html.twig';
+    return $remplates;
+});
+```
+
+---------------------------------------------------------------------------
+
+by flip111 at 2015-05-12T20:45:01Z
+
+@GromNaN The type of of `data_collector.templates` looks like `closure` not `array` in this piece of code https://github.com/GromNaN/Silex-WebProfiler/blob/twig-profiler/WebProfilerServiceProvider.php#L62-L80 Perhaps i don't fully understand the inner workings here or the closure could have been resolved (executed) before trying to merge it
+
+---------------------------------------------------------------------------
+
+by GromNaN at 2015-05-12T20:47:12Z
+
+This is how the Pimple container works. You set a closure a service factory, and you magically get the service.
+
+---------------------------------------------------------------------------
+
+by flip111 at 2015-05-12T20:52:11Z
+
+ok that's strange then ... `array_merge` should work ... but it doesn't ?? I think your code could be a good workaround
+
+---------------------------------------------------------------------------
+
+by flip111 at 2015-05-12T21:50:18Z
+
+@GromNaN I tested this workaround ... the error goes away but the toolbar does not show up anymore. So perhaps  it's better to discuss it further here https://github.com/jeromemacias/Silex-Debug/issues/5
