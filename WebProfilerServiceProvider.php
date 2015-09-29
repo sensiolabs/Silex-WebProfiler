@@ -192,10 +192,10 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $app['profiler.listener'] = function ($app) {
             return new ProfilerListener(
                 $app['profiler'],
+                $app['request_stack'],
                 $app['profiler.request_matcher'],
                 $app['profiler.only_exceptions'],
-                $app['profiler.only_master_requests'],
-                $app['request_stack']
+                $app['profiler.only_master_requests']                
             );
         };
 
