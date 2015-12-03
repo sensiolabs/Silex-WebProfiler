@@ -71,19 +71,20 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             if (class_exists('Symfony\Bridge\Twig\Extension\ProfilerExtension')) {
                 $templates[] = array('twig', '@WebProfiler/Collector/twig.html.twig');
             }
+
             return $templates;
         });
 
         $app['data_collectors'] = $app->share(function ($app) {
             return array(
-                'config'    => $app->share(function ($app) { return new ConfigDataCollector(); }),
-                'request'   => $app->share(function ($app) { return new RequestDataCollector(); }),
+                'config' => $app->share(function ($app) { return new ConfigDataCollector(); }),
+                'request' => $app->share(function ($app) { return new RequestDataCollector(); }),
                 'exception' => $app->share(function ($app) { return new ExceptionDataCollector(); }),
-                'events'    => $app->share(function ($app) { return new EventDataCollector($app['dispatcher']); }),
-                'logger'    => $app->share(function ($app) { return new LoggerDataCollector($app['logger']); }),
-                'time'      => $app->share(function ($app) { return new TimeDataCollector(null, $app['stopwatch']); }),
-                'router'    => $app->share(function ($app) { return new RouterDataCollector(); }),
-                'memory'    => $app->share(function ($app) { return new MemoryDataCollector(); }),
+                'events' => $app->share(function ($app) { return new EventDataCollector($app['dispatcher']); }),
+                'logger' => $app->share(function ($app) { return new LoggerDataCollector($app['logger']); }),
+                'time' => $app->share(function ($app) { return new TimeDataCollector(null, $app['stopwatch']); }),
+                'router' => $app->share(function ($app) { return new RouterDataCollector(); }),
+                'memory' => $app->share(function ($app) { return new MemoryDataCollector(); }),
             );
         });
 
