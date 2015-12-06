@@ -38,7 +38,7 @@ class WebProfilerTest extends WebTestCase
                     'anonymous' => true,
                 ),
             ),
-            'security.encoder.digest' => new PlaintextPasswordEncoder,
+            'security.encoder.digest' => new PlaintextPasswordEncoder(),
         ));
         $app->register(new Provider\SecurityServiceProvider());
         $app->register(new Provider\TwigServiceProvider(), array(
@@ -112,5 +112,19 @@ class WebProfilerTest extends WebTestCase
         $crawler = $client->click($crawler->selectLink('Twig')->link());
         $this->assertTrue($client->getResponse()->isOk(), 'Twig profiler is enabled');
         $this->assertCount(1, $crawler->filter('h2:contains("Twig Stats"), h2:contains("Twig Metrics")'), 'Twig profiler is working');
+    }
+
+    public function testSecurityProfiler()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/');
+
+        $link = $client->getResponse()->headers->get('X-Debug-Token-Link');
+        $crawler = $client->request('GET', $link);
+
+        $crawler = $client->click($crawler->selectLink('Security')->link());
+        $this->assertTrue($client->getResponse()->isOk(), 'Security profiler is enabled');
+        $this->assertCount(1, $crawler->filter('h2:contains("Security Token")'), 'Security profiler is working');
+        $this->assertCount(1, $crawler->filter('span:contains("Anonymous")'), 'Profiler gets anonymous token');
     }
 }
