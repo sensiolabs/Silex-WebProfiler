@@ -170,11 +170,12 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
         if (isset($app['security.token_storage']) && class_exists('Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector')) {
             $app->extend('data_collectors', function ($collectors, $app) {
-                $logoutUrlGenerator = new LogoutUrlGenerator($app['request_stack'], $app['security.http_utils'], $app['security.token_storage']);
+                $collectors['security'] = function ($app) {
+                    $roleHierarchy = !empty($app['security.role_hierarchy']) ? $app['security.role_hierarchy'] : null;
+                    $logoutUrlGenerator = new LogoutUrlGenerator($app['request_stack'], $app['url_generator'], $app['security.token_storage']);
 
-                $collectors['security'] = $app->share(function ($app) use ($logoutUrlGenerator) {
-                    return new SecurityDataCollector($app['security.token_storage'], $app['security.role_hierarchy'], $logoutUrlGenerator);
-                });
+                    return new SecurityDataCollector($app['security.token_storage'], $roleHierarchy, $logoutUrlGenerator);
+                };
 
                 return $collectors;
             });
@@ -198,6 +199,18 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
                 return dirname(dirname($r->getFileName())).'/Resources/views';
             };
+
+            $app['twig'] = $app->extend('twig', function($twig, $app) {
+                $twig->addFilter('yaml_encode', new \Twig_SimpleFilter('yaml_encode', function (array $var) {
+                    return Yaml::dump($var);
+                }));
+
+                $twig->addFunction('yaml_encode', new \Twig_SimpleFunction('yaml_encode', function (array $var) {
+                    return Yaml::dump($var);
+                }));
+
+                return $twig;
+            });
         }
 
         $app['web_profiler.controller.profiler'] = function ($app) {

@@ -14,6 +14,7 @@ namespace Silex\Provider\Tests;
 use Silex\Application;
 use Silex\WebTestCase;
 use Silex\Provider;
+use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 
 class WebProfilerTest extends WebTestCase
 {
@@ -23,7 +24,23 @@ class WebProfilerTest extends WebTestCase
 
         // Service providers
         $app->register(new Provider\HttpFragmentServiceProvider());
-        $app->register(new Provider\ServiceControllerServiceProvider());
+        $app->register(new Provider\ServiceControllerServiceProvider(), array(
+            'security.firewalls' => array(
+                'secured' => array(
+                    'pattern' => '^/secured',
+                    'form' => array('login_path' => '/login', 'check_path' => '/login_check'),
+                    'users' => array(
+                        'admin' => array('ROLE_ADMIN', 'admin_pass'),
+                    ),
+                ),
+                'default' => array(
+                    'pattern' => '^.*$',
+                    'anonymous' => true,
+                ),
+            ),
+            'security.encoder.digest' => new PlaintextPasswordEncoder,
+        ));
+        $app->register(new Provider\SecurityServiceProvider());
         $app->register(new Provider\TwigServiceProvider(), array(
             'twig.templates' => array(
                 'index.twig' => '<body>OK</body>',
