@@ -14,6 +14,7 @@ namespace Silex\Provider;
 use Pimple\Container;
 use Symfony\Bridge\Twig\DataCollector\TwigDataCollector;
 use Symfony\Bridge\Twig\Extension\ProfilerExtension;
+use Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector;
 use Symfony\Bundle\WebProfilerBundle\Controller\ExceptionController;
 use Symfony\Bundle\WebProfilerBundle\Controller\RouterController;
 use Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController;
@@ -40,6 +41,7 @@ use Symfony\Component\HttpKernel\DataCollector\TimeDataCollector;
 use Symfony\Component\HttpKernel\DataCollector\LoggerDataCollector;
 use Symfony\Component\HttpKernel\DataCollector\EventDataCollector;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
+use Symfony\Component\Security\Http\Logout\LogoutUrlGenerator;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Bridge\Twig\Extension\CodeExtension;
 use Silex\Application;
@@ -164,6 +166,38 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
                 return $collectors;
             });
+        }
+
+        if (isset($app['security.token_storage']) && class_exists('Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector')) {
+            $app->extend('data_collectors', function ($collectors, $app) {
+                $logoutUrlGenerator = new LogoutUrlGenerator($app['request_stack'], $app['security.http_utils'], $app['security.token_storage']);
+
+                $collectors['security'] = $app->share(function ($app) use ($logoutUrlGenerator) {
+                    return new SecurityDataCollector($app['security.token_storage'], $app['security.role_hierarchy'], $logoutUrlGenerator);
+                });
+
+                return $collectors;
+            });
+
+            $app->extend('data_collector.templates', function ($templates) {
+                $templates[] = ['security', '@Security/Collector/security.html.twig'];
+
+                return $templates;
+            });
+
+            $app->extend('twig.loader.filesystem', function ($loader, $app) {
+                if ($app['profiler.templates_path.security']) {
+                    $loader->addPath($app['profiler.templates_path.security'], 'Security');
+                }
+
+                return $loader;
+            });
+
+            $app['profiler.templates_path.security'] = function () {
+                $r = new \ReflectionClass('Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector');
+
+                return dirname(dirname($r->getFileName())).'/Resources/views';
+            };
         }
 
         $app['web_profiler.controller.profiler'] = function ($app) {
