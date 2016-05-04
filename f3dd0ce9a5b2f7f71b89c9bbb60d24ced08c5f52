@@ -1,0 +1,21 @@
+---------------------------------------------------------------------------
+
+by tiemevanveen at 2016-03-04T15:14:43Z
+
+Hmm, can't get the profile up and running with my silex 1.0 project. Are v1 projects still supported?
+
+    Something went wrong: 500
+
+    The profiler template "@WebProfiler/Collector/twig.html.twig" for data collector "twig" does not exist.
+
+    #0 /var/www/vendor/symfony/web-profiler-bundle/Symfony/Bundle/WebProfilerBundle/Profiler/TemplateManager.php(56): Symfony\Bundle\WebProfilerBundle\Profiler\TemplateManager->getNames(Object(Symfony\Component\HttpKernel\Profiler\Profile))
+    #1 /var/www/vendor/symfony/web-profiler-bundle/Symfony/Bundle/WebProfilerBundle/Controller/ProfilerController.php(102): Symfony\Bundle\WebProfilerBundle\Profiler\TemplateManager->getName(Object(Symfony\Component\HttpKernel\Profiler\Profile), 'request')
+    #2 [internal function]: Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController->panelAction(Object(Symfony\Component\HttpFoundation\Request), 'e8d299')
+    #3 /var/www/vendor/symfony/http-kernel/HttpKernel.php(139): call_user_func_array(Array, Array)
+    #4 /var/www/vendor/symfony/http-kernel/HttpKernel.php(62): Symfony\Component\HttpKernel\HttpKernel->handleRaw(Object(Symfony\Component\HttpFoundation\Request), 1)
+    #5 /var/www/vendor/silex/silex/src/Silex/Application.php(586): Symfony\Component\HttpKernel\HttpKernel->handle(Object(Symfony\Component\HttpFoundation\Request), 1, true)
+    #6 /var/www/vendor/silex/silex/src/Silex/Application.php(563): Silex\Application->handle(Object(Symfony\Component\HttpFoundation\Request))
+    #7 /var/www/web/index.php(3): Silex\Application->run()
+    #8 {main}
+
+When requesting  `/_profiler/e8d299`
