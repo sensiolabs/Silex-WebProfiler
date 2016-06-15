@@ -15,6 +15,9 @@
         "symfony/twig-bridge": "^2.8|^3.0",
         "symfony/stopwatch": "^2.8|^3.0"
     },
+    "conflict": {
+        "symfony/web-profiler-bundle": "3.1.0"
+    },
     "require-dev": {
         "symfony/browser-kit": "^2.8|^3.0",
         "symfony/css-selector": "^2.8|^3.0",
