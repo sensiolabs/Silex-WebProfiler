@@ -1,0 +1,30 @@
+---------------------------------------------------------------------------
+
+by mvanbaak at 2016-06-15T07:02:08Z
+
+I updated the web-profile-bundle as well now symfony 3.1.1 is out.
+This is ready to go.
+
+---------------------------------------------------------------------------
+
+by fabpot at 2016-06-15T07:09:44Z
+
+Do we need to mark 3.1.0 as conflicting?
+
+---------------------------------------------------------------------------
+
+by mvanbaak at 2016-06-15T07:10:57Z
+
+Yeah, probably best to do that since it will break.
+
+---------------------------------------------------------------------------
+
+by fabpot at 2016-06-15T07:12:56Z
+
+Can you update composer.json accordingly before I merge?
+
+---------------------------------------------------------------------------
+
+by mvanbaak at 2016-06-15T07:16:21Z
+
+done :)
