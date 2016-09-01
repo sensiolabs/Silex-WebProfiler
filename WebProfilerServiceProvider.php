@@ -81,7 +81,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
                 array('router',      '@WebProfiler/Collector/router.html.twig'),
                 array('memory',      '@WebProfiler/Collector/memory.html.twig'),
                 array('form',        '@WebProfiler/Collector/form.html.twig'),
-                array('translation', '@WebProfiler/Collector/translation.html.twig')
+                array('translation', '@WebProfiler/Collector/translation.html.twig'),
             );
 
             if (class_exists('Symfony\Bridge\Twig\Extension\ProfilerExtension')) {
@@ -187,7 +187,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             });
 
             $app->extend('data_collector.templates', function ($templates) {
-                $templates[] = ['security', '@Security/Collector/security.html.twig'];
+                $templates[] = array('security', '@Security/Collector/security.html.twig');
 
                 return $templates;
             });
@@ -206,7 +206,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
                 return dirname(dirname($r->getFileName())).'/Resources/views';
             };
 
-            $app['twig'] = $app->extend('twig', function($twig, $app) {
+            $app['twig'] = $app->extend('twig', function ($twig, $app) {
                 $twig->addFilter('yaml_encode', new \Twig_SimpleFilter('yaml_encode', function (array $var) {
                     return Yaml::dump($var);
                 }));
