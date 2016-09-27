@@ -218,7 +218,6 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             });
         }
 
-
         if (isset($app['translator']) && class_exists('Symfony\Component\Translation\DataCollector\TranslationDataCollector')) {
             $app['data_collectors'] = $app->extend('data_collectors', function ($collectors, $app) {
                 $collectors['translation'] = function ($app) {
@@ -228,7 +227,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
                 return $collectors;
             });
 
-            $app->extend('translator', function($translator, $app) {
+            $app->extend('translator', function ($translator, $app) {
                 return new DataCollectorTranslator($translator);
             });
         }
