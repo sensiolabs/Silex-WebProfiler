@@ -53,7 +53,6 @@ use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Translation\DataCollector\TranslationDataCollector;
 use Symfony\Component\Translation\DataCollectorTranslator;
-use Symfony\Component\Translation\Translator;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -219,7 +218,8 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             });
         }
 
-        if (isset($app['translator']) && $app['translator'] instanceof Translator) {
+
+        if (isset($app['translator']) && class_exists('Symfony\Component\Translation\DataCollector\TranslationDataCollector')) {
             $app['data_collectors'] = $app->extend('data_collectors', function ($collectors, $app) {
                 $collectors['translation'] = function ($app) {
                     return new TranslationDataCollector($app['translator']);
@@ -228,9 +228,9 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
                 return $collectors;
             });
 
-            $translator = new DataCollectorTranslator($app['translator']);
-            $app->offsetUnset('translator');
-            $app->offsetSet('translator', $translator);
+            $app->extend('translator', function($translator, $app) {
+                return new DataCollectorTranslator($translator);
+            });
         }
 
         $app['web_profiler.controller.profiler'] = function ($app) {
