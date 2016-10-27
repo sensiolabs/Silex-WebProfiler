@@ -1,0 +1,24 @@
+---------------------------------------------------------------------------
+
+by SpacePossum at 2016-10-09T11:02:57Z
+
+We only know if this works if your SF PR is merged, as the class `FileLinkFormatter` doesn't exists yet :)
+(maybe add a utest for this change?)
+
+---------------------------------------------------------------------------
+
+by fabpot at 2016-10-09T11:05:34Z
+
+I supposed @jeremyFreeAgent tested it manually, right?
+
+---------------------------------------------------------------------------
+
+by jeremyFreeAgent at 2016-10-09T17:10:43Z
+
+Yes I needed to test it manually since the dependencies are not merged yet. If the `FileLinkFormatter` is not here, it fallbacks on the previous one.
+
+---------------------------------------------------------------------------
+
+by jeremyFreeAgent at 2016-10-25T18:34:11Z
+
+I've pushed the changes to reflect the ones made in the Symfony PR.
