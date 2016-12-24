@@ -249,8 +249,9 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
         $app['web_profiler.toolbar.listener'] = function ($app) {
             $mode = $app['web_profiler.debug_toolbar.enable'] ? WebDebugToolbarListener::ENABLED : WebDebugToolbarListener::DISABLED;
+            $excludedAjaxPaths = isset($app['web_profiler.debug_toolbar.excluded_ajax_paths']) ? $app['web_profiler.debug_toolbar.excluded_ajax_paths'] : null;
 
-            return new WebDebugToolbarListener($app['twig'], $app['web_profiler.debug_toolbar.intercept_redirects'], $mode, $app['web_profiler.debug_toolbar.position'], $app['url_generator']);
+            return new WebDebugToolbarListener($app['twig'], $app['web_profiler.debug_toolbar.intercept_redirects'], $mode, $app['web_profiler.debug_toolbar.position'], $app['url_generator'], $excludedAjaxPaths);
         };
 
         $app['profiler'] = function ($app) {
