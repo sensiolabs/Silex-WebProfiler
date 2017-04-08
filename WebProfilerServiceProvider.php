@@ -103,22 +103,42 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
         $app['data_collectors'] = function ($app) {
             return array(
-                'config' => function ($app) { return new ConfigDataCollector('Silex', Application::VERSION); },
-                'request' => function ($app) { return new RequestDataCollector(); },
-                'exception' => function ($app) { return new ExceptionDataCollector(); },
-                'events' => function ($app) { return new EventDataCollector($app['dispatcher']); },
-                'logger' => function ($app) { return new LoggerDataCollector($app['logger']); },
-                'time' => function ($app) { return new TimeDataCollector(null, $app['stopwatch']); },
-                'router' => function ($app) { return new RouterDataCollector(); },
-                'memory' => function ($app) { return new MemoryDataCollector(); },
+                'config' => function ($app) {
+                    return new ConfigDataCollector('Silex', Application::VERSION);
+                },
+                'request' => function ($app) {
+                    return new RequestDataCollector();
+                },
+                'exception' => function ($app) {
+                    return new ExceptionDataCollector();
+                },
+                'events' => function ($app) {
+                    return new EventDataCollector($app['dispatcher']);
+                },
+                'logger' => function ($app) {
+                    return new LoggerDataCollector($app['logger']);
+                },
+                'time' => function ($app) {
+                    return new TimeDataCollector(null, $app['stopwatch']);
+                },
+                'router' => function ($app) {
+                    return new RouterDataCollector();
+                },
+                'memory' => function ($app) {
+                    return new MemoryDataCollector();
+                },
             );
         };
 
         if (isset($app['form.resolved_type_factory']) && class_exists('\Symfony\Component\Form\Extension\DataCollector\FormDataCollector')) {
-            $app['data_collectors.form.extractor'] = function () { return new FormDataExtractor(); };
+            $app['data_collectors.form.extractor'] = function () {
+                return new FormDataExtractor();
+            };
 
             $app->extend('data_collectors', function ($collectors, $app) {
-                $collectors['form'] = function ($app) { return new FormDataCollector($app['data_collectors.form.extractor']); };
+                $collectors['form'] = function ($app) {
+                    return new FormDataCollector($app['data_collectors.form.extractor']);
+                };
 
                 return $collectors;
             });
@@ -249,8 +269,9 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
         $app['web_profiler.toolbar.listener'] = function ($app) {
             $mode = $app['web_profiler.debug_toolbar.enable'] ? WebDebugToolbarListener::ENABLED : WebDebugToolbarListener::DISABLED;
+            $excludedAjaxPaths = isset($app['web_profiler.debug_toolbar.excluded_ajax_paths']) ? $app['web_profiler.debug_toolbar.excluded_ajax_paths'] : null;
 
-            return new WebDebugToolbarListener($app['twig'], $app['web_profiler.debug_toolbar.intercept_redirects'], $mode, $app['web_profiler.debug_toolbar.position'], $app['url_generator']);
+            return new WebDebugToolbarListener($app['twig'], $app['web_profiler.debug_toolbar.intercept_redirects'], $mode, $app['web_profiler.debug_toolbar.position'], $app['url_generator'], $excludedAjaxPaths);
         };
 
         $app['profiler'] = function ($app) {
