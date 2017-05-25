@@ -27,6 +27,8 @@ use Symfony\Bundle\WebProfilerBundle\Controller\RouterController;
 use Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController;
 use Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener;
 use Symfony\Bundle\WebProfilerBundle\Twig\WebProfilerExtension;
+use Symfony\Component\Cache\Adapter\TraceableAdapter;
+use Symfony\Component\Cache\DataCollector\CacheDataCollector;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\DataCollector\FormDataCollector;
 use Symfony\Component\Form\Extension\DataCollector\FormDataExtractor;
@@ -65,6 +67,9 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 {
     public function register(Container $app)
     {
+        $r = new \ReflectionClass('Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener');
+        $app['profiler.templates_path'] = dirname(dirname($r->getFileName())).'/Resources/views';
+
         $app['profiler.mount_prefix'] = '/_profiler';
         $app->extend('dispatcher', function ($dispatcher, $app) {
             return new TraceableEventDispatcher($dispatcher, $app['stopwatch'], $app['logger']);
@@ -236,6 +241,41 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
             });
         }
 
+        if (isset($app['cache.pools']) &&
+            class_exists('Symfony\Component\Cache\DataCollector\CacheDataCollector') &&
+            is_file($app['profiler.templates_path'].'/Collector/cache.html.twig')
+        ) {
+            $app->extend('cache.pools', function ($pools) {
+                foreach ($pools->keys() as $poolName) {
+                    $pools->extend($poolName, function ($adapter) {
+                        return new TraceableAdapter($adapter);
+                    });
+                }
+
+                return $pools;
+            });
+
+            $app->extend('data_collector.templates', function ($templates) {
+                $templates[] = array('cache', '@WebProfiler/Collector/cache.html.twig');
+
+                return $templates;
+            });
+
+            $app->extend('data_collectors', function ($collectors, $app) {
+                $collectors['cache'] = function ($app) {
+                    $collector = new CacheDataCollector();
+
+                    foreach ($app['cache.pools']->keys() as $poolName) {
+                        $collector->addInstance('cache.'.$poolName, $app['cache.pools'][$poolName]);
+                    }
+
+                    return $collector;
+                };
+
+                return $collectors;
+            });
+        }
+
         $app['web_profiler.controller.profiler'] = function ($app) use ($baseDir) {
             return new ProfilerController($app['url_generator'], $app['profiler'], $app['twig'], $app['data_collector.templates'], $app['web_profiler.debug_toolbar.position'], null, $baseDir);
         };
@@ -315,12 +355,6 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
             return $loader;
         });
-
-        $app['profiler.templates_path'] = function () {
-            $r = new \ReflectionClass('Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener');
-
-            return dirname(dirname($r->getFileName())).'/Resources/views';
-        };
 
         $app['profiler.templates_path.debug'] = function () {
             // This code cannot be simplified as all classes in the bundle depend
