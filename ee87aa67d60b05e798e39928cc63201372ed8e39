@@ -1,0 +1,5 @@
+---------------------------------------------------------------------------
+
+by fabpot at 2017-11-07T00:11:57Z
+
+Indeed, we need to fix the BC break upstream. This PR is still valid to get the new feature though.
