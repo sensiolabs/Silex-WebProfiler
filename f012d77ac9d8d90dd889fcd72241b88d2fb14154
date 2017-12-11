@@ -1,0 +1,127 @@
+---------------------------------------------------------------------------
+
+by fabpot at 2017-06-12T19:09:41Z
+
+/cc @nicolas-grekas Can you validate this one please?
+
+---------------------------------------------------------------------------
+
+by shamotj at 2017-07-04T11:03:50Z
+
+I confirm this resolves my issue with debug tag in toolbar, and also it resolves #95
+
+---------------------------------------------------------------------------
+
+by nicolas-grekas at 2017-07-15T10:07:14Z
+
+But please check that this patch doesn't have any unwanted side effect on CLI apps.
+
+---------------------------------------------------------------------------
+
+by macintoshplus at 2017-10-03T14:52:55Z
+
+This PR fix the issue for me.
+
+In console mode I use `\Knp\Provider\ConsoleServiceProvider()` and the `\Silex\Provider\WebProfilerServiceProvider()` is not loaded.
+In fact, the `dump()` function work fine.
+
+You need other test for merge ?
+
+---------------------------------------------------------------------------
+
+by alehaa at 2017-10-30T18:51:59Z
+
+I can confirm this patch fixes the issue for plain Silex web applications.
+
+---------------------------------------------------------------------------
+
+by alehaa at 2017-10-30T19:28:16Z
+
+@nicolas-grekas I think I know what you've meant ... After applying the patch, there's a tiny bug (maybe you can fix it @qkdreyer? ;) ): `dump()` outputs the HTML twice outside of the application, e.g. placing a `dump($app);` after `$app->run();` will print the application's data twice. Without this patch there won't be any output et all.
+
+---------------------------------------------------------------------------
+
+by mrak1990 at 2017-12-09T12:55:14Z
+
+@fabpot @nicolas-grekas Any news on this issue?
+This fix works for me. Call of  `Symfony\Component\Debug\Debug::enable();` hide the Debug panel in profiler.
+Minimal working examle (index.php in the root of fabpot/silex-skeleton):
+```php
+<?php
+
+use Silex\Application;
+use Silex\Provider;
+use Silex\Provider\WebProfilerServiceProvider;
+use Symfony\Component\VarDumper\VarDumper;
+
+require_once __DIR__.'/vendor/autoload.php';
+
+//Symfony\Component\Debug\Debug::enable();
+
+$app = new Application();
+$app['debug'] = true;
+
+$app->register(new Provider\HttpFragmentServiceProvider());
+$app->register(new Provider\ServiceControllerServiceProvider());
+$app->register(new Provider\AssetServiceProvider());
+$app->register(new Provider\TwigServiceProvider());
+$app->register(new Silex\Provider\VarDumperServiceProvider());
+$app->register(new WebProfilerServiceProvider(), array(
+    'profiler.cache_dir' => __DIR__.'/../var/cache/profiler',
+));
+$app['twig.path'] = array(__DIR__.'/templates');
+
+$app->get('/', function () use ($app) {
+    VarDumper::dump([1, 2, 3]);
+    dump([1, '2', 'three']);
+
+    return $app['twig']->render('index.html.twig', []);
+});
+
+$app->run();
+```
+Composer.json from fabpot/silex-skeleton with two new packages: symfony/var-dumper and symfony/debug-bundle
+```javascript
+{
+    "name": "fabpot/silex-skeleton",
+    "description": "A pre-configured skeleton for the Silex microframework",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=5.5.9",
+        "silex/silex": "~2.0",
+        "silex/web-profiler": "^2.0",
+        "symfony/asset": "~2.8|^3.0",
+        "symfony/browser-kit": "~2.8|^3.0",
+        "symfony/class-loader": "~2.8|^3.0",
+        "symfony/config": "~2.8|^3.0",
+        "symfony/console": "~2.8|^3.0",
+        "symfony/css-selector": "~2.8|^3.0",
+        "symfony/debug": "~2.8|^3.0",
+        "symfony/finder": "~2.8|^3.0",
+        "symfony/form": "~2.8|^3.0",
+        "symfony/monolog-bridge": "~2.8|^3.0",
+        "symfony/process": "~2.8|^3.0",
+        "symfony/security": "~2.8|^3.0",
+        "symfony/translation": "~2.8|^3.0",
+        "symfony/twig-bridge": "~2.8|^3.0",
+        "symfony/validator": "~2.8|^3.0",
+        "symfony/var-dumper": "^3.4",
+        "symfony/debug-bundle": "^3.4"
+    },
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    },
+    "scripts": {
+        "run": [
+            "echo 'Started web server on http://localhost:8888'",
+            "php -S localhost:8888 -t web"
+        ]
+    }
+}
+```
