@@ -25,7 +25,9 @@
         "symfony/phpunit-bridge": "~3.2",
         "symfony/security": "^2.8|^3.0",
         "symfony/security-bundle": "^2.8|^3.0",
-        "symfony/translation": "^2.8|^3.0"
+        "symfony/translation": "^2.8|^3.0",
+        "symfony/var-dumper": "^3.3@dev",
+        "symfony/cache": "^3.3@dev"
     },
     "autoload": {
         "psr-4": { "Silex\\Provider\\": "" }
