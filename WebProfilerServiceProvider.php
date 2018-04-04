@@ -309,6 +309,8 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
 
         $app->extend('twig.loader.filesystem', function ($loader, $app) {
             $loader->addPath($app['profiler.templates_path'], 'WebProfiler');
+            $loader->addPath(__DIR__.'/Resources/views/Twig', 'Twig');
+
             if ($app['profiler.templates_path.debug']) {
                 $loader->addPath($app['profiler.templates_path.debug'], 'Debug');
             }
