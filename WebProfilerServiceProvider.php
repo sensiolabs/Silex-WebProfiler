@@ -237,7 +237,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         }
 
         $app['web_profiler.controller.profiler'] = function ($app) use ($baseDir) {
-            return new ProfilerController($app['url_generator'], $app['profiler'], $app['twig'], $app['data_collector.templates'], $app['web_profiler.debug_toolbar.position'], null, $baseDir);
+            return new ProfilerController($app['url_generator'], $app['profiler'], $app['twig'], $app['data_collector.templates'], null, $baseDir);
         };
 
         $app['web_profiler.controller.router'] = function ($app) {
@@ -251,7 +251,7 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $app['web_profiler.toolbar.listener'] = function ($app) {
             $mode = $app['web_profiler.debug_toolbar.enable'] ? WebDebugToolbarListener::ENABLED : WebDebugToolbarListener::DISABLED;
 
-            return new WebDebugToolbarListener($app['twig'], $app['web_profiler.debug_toolbar.intercept_redirects'], $mode, $app['web_profiler.debug_toolbar.position'], $app['url_generator']);
+            return new WebDebugToolbarListener($app['twig'], $app['web_profiler.debug_toolbar.intercept_redirects'], $mode, $app['url_generator']);
         };
 
         $app['profiler'] = function ($app) {
@@ -272,7 +272,6 @@ class WebProfilerServiceProvider implements ServiceProviderInterface, Controller
         $app['profiler.only_exceptions'] = false;
         $app['profiler.only_master_requests'] = false;
         $app['web_profiler.debug_toolbar.enable'] = true;
-        $app['web_profiler.debug_toolbar.position'] = 'bottom';
         $app['web_profiler.debug_toolbar.intercept_redirects'] = false;
 
         $app['profiler.listener'] = function ($app) {
